@@ -1,1 +1,1 @@
-# coll_scan
+# Collisionality scan with DBS data
