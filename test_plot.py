@@ -18,18 +18,11 @@ plt.rcParams.update({'axes.formatter.use_mathtext': True,
                      'pdf.fonttype': 42})
 sns.set(style='ticks', palette='Set2')
 
+
 # %%
-if __name__ == "__main__":
-    shot = 171956
-    t1, t2 = 3000, 3500
-    nperseg = 1024
-    nfft = nperseg * 2
-    overlap = 0.9
-
-    data, t = get_dbs(shot, (t1, t2))
-    print("Read data from file.")
-
-    # %% Calculate coherent spectra
+def calc_coh_spec(data, t, nperseg=1024, nfft=1024, overlap=0.5) \
+        -> ('Coherent spectra', 'freq', 'time'):
+    """Calculate coherent spectra"""
     fs = 1 / abs(np.mean(np.diff(t)))
     da = data.real
     db = data.imag
@@ -40,16 +33,43 @@ if __name__ == "__main__":
                               noverlap=noverlap, fs=fs)
     # print(Sx.shape, freq.shape)
     Scoh = Sa * coh[:, :, None]
+    return Scoh, freq, time + t[0]
 
-    # %% Plotting coherent power spectra
+
+def plot_coh_spec(Scoh, freq, time) -> None:
+    """Plot coherent power spectra"""
+    import multiprocessing as mp
+    with mp.Pool(processes=8) as p:
+        p.map(plot_coh_spec_ch, range(Scoh.shape[0]))
+
+
+def plot_coh_spec_ch(i):
     i_low = 10
-    for i in range(Scoh.shape[0]):
-        plt.figure(i + 1)
-        plt.pcolormesh(time + t1, freq[i_low:], np.log10(Scoh[i, i_low:, :]),
-                       cmap='cubehelix_r')
-        plt.title(f'coh power spec {shot} ch{i+1} {t1}-{t2}')
-        plt.xlabel('time (ms)')
-        plt.ylabel('f (kHz)')
-        plt.tight_layout()
-        plt.savefig(f'../fig/coh_pwr_spec_{shot}.png')
-        plt.show()
+    print(f"Plotting channel {i+1}")
+    plt.figure(i + 1)
+    plt.pcolormesh(time, freq[i_low:], np.log10(Scoh[i, i_low:, :]),
+                   cmap='viridis')
+    plt.title(f'coh power spec {shot} ch{i+1} {t1}-{t2}')
+    plt.xlabel('time (ms)')
+    plt.ylabel('f (kHz)')
+    plt.tight_layout()
+    plt.savefig(f'../fig/coh_pwr_spec_{shot}_ch{i+1}.png')
+    plt.show()
+
+
+# %%
+if __name__ == "__main__":
+    shot = 171956
+    t1, t2 = 3000, 3500
+    nperseg = 1024 * 2
+    nfft = nperseg * 2
+    overlap = 0.5
+
+    data, t = get_dbs(shot, (t1, t2))
+    print("Read data from file.")
+
+    # %%
+    Scoh, freq, time = calc_coh_spec(data, t, nperseg=nperseg, nfft=nfft,
+                                     overlap=overlap)
+    # %% Plotting coherent power spectra
+    plot_coh_spec(Scoh, freq, time)
