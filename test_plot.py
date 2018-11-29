@@ -4,14 +4,17 @@
 Check DBS data
 """
 import numpy as np
-import xarray as xr
 import seaborn as sns
 import matplotlib.pyplot as plt
 from raw_data_async import get_dbs
 import scipy.signal as sps
-import os
+import multiprocessing as mp
+from numpy.fft import fftshift as fsh
 
+# import os
+# import xarray as xr
 # import _axes_prop
+
 # plt.switch_backend('Agg')
 plt.rcParams.update({'axes.formatter.use_mathtext': True,
                      'axes.formatter.limits': [-3, 4],
@@ -70,13 +73,11 @@ def calc_quad(data, t, nperseg=1024, nfft=1024, overlap=0.5) \
 
 def plot_quad_2d(Sx, freq, time) -> None:
     """Plot 2d Quadrature"""
-    import multiprocessing as mp
     with mp.Pool(processes=8) as p:
         p.map(plot_quad_ch_2d, range(Sx.shape[0]))
 
 
 def plot_quad_ch_2d(i):
-    from numpy.fft import fftshift as fsh
     print(f"Plotting channel {i+1}")
     fig = plt.figure(i + 1)
     plt.pcolormesh(time, fsh(freq), np.log10(fsh(Sx[i, :, :], axes=0)),
@@ -91,13 +92,11 @@ def plot_quad_ch_2d(i):
 
 def plot_quad_1d(Sx, freq) -> None:
     """Plot 1d quad"""
-    import multiprocessing as mp
     with mp.Pool(processes=8) as p:
         p.map(plot_quad_ch_1d, range(Sx.shape[0]))
 
 
 def plot_quad_ch_1d(i):
-    from numpy.fft import fftshift as fsh
     print(f"Plotting channel {i+1}")
     fig = plt.figure(i + 1)
     Sm = np.mean(Sx[i, :, :], axis=-1)
