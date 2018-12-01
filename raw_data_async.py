@@ -21,16 +21,16 @@ def get_dbs(shot: int, trange: '(t1, t2)' = None) -> ('complex array', 'time'):
         time = tall.values
         da, db = [np.empty((8, len(time))) for i in range(2)]
         for i in range(8):
-            da[i, :] = ds[f'd{i+1}a'].values
-            db[i, :] = ds[f'd{i+1}b'].values
+            da[i, :] = ds[f'd{i + 1}a'].values
+            db[i, :] = ds[f'd{i + 1}b'].values
     else:
         t1, t2 = trange
         idx = np.logical_and(t1 <= tall, tall < t2)
         time = ds['time'][idx].values
         da, db = [np.empty((8, len(time))) for i in range(2)]
         for i in range(8):
-            da[i, :] = ds[f'd{i+1}a'][idx].values
-            db[i, :] = ds[f'd{i+1}b'][idx].values
+            da[i, :] = ds[f'd{i + 1}a'][idx].values
+            db[i, :] = ds[f'd{i + 1}b'][idx].values
     return da + 1j * db, time
 
 
@@ -61,6 +61,8 @@ def dl_dbs_all(shot: int) -> None:
     if isfile(filepath):
         print(f'{filepath} exists! Pass!')
         return None
+    else:
+        print(f"Starting {shot}")
 
     chan = range(1, 9)
     d1a, time = dl_dbs_t(shot)
@@ -88,7 +90,7 @@ def dl_dbs_all(shot: int) -> None:
 
 # %%
 if __name__ == '__main__':
-    shots = [171956]
+    shots = range(171967, 171970)
     for shot in shots:
         t0 = time.time()
         dl_dbs_all(shot)

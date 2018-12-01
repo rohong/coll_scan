@@ -42,8 +42,7 @@ def plot_coh_spec_2d(Scoh, freq, time, shot) -> None:
                       cmap='viridis')
         ax.set(title=f'coh spec {shot} ch{i + 1}')
     plt.tight_layout()
-    fig.savefig(f'../fig/coh_pwr_spec_{shot}_2d.png', dpi=300,
-                transparent=True)
+    fig.savefig(f'../fig/coh_pwr_spec_2d_{shot}.png', transparent=True)
     plt.close()
 
 
@@ -53,11 +52,12 @@ def plot_coh_spec_1d(Scoh, freq, time, shot) -> None:
     for i, ax in enumerate(axs.flatten(order='F')):
         Sm = np.mean(Scoh[i, :, :], axis=-1)
         fav = np.sum(freq * Sm) / np.sum(Sm)
-        ax.semilogy(freq, Sm)
+        ax.semilogy(freq, Sm, lw=1)
         ax.axvline(fav, ls='--', c='C3')
-        ax.set(title=f'coh spec {shot} ch{i + 1} f={fav:.0f}kHz')
+        ax.set(title=f'coh spec {shot} ch{i + 1} f={fav:.0f}kHz',
+               ylim=(1e-12, 5e-5))
     plt.tight_layout()
-    fig.savefig(f'../fig/coh_pwr_spec_{shot}_1d.png', dpi=300,
+    fig.savefig(f'../fig/coh_pwr_spec_1d_{shot}.png', dpi=300,
                 transparent=True)
     plt.close()
 
@@ -77,7 +77,7 @@ def plots(shot):
     data, t = load_data(shot)
     Sx, freq, time = calc_coh_spec(data, t, nperseg=nperseg, nfft=nfft,
                                    overlap=overlap)
-    plot_coh_spec_2d(Sx, freq, time, shot)
+    # plot_coh_spec_2d(Sx, freq, time, shot)
     plot_coh_spec_1d(Sx, freq, time, shot)
 
 

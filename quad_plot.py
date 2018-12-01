@@ -3,13 +3,11 @@
 """
 Plot quadrature 1d and 2d into files
 """
-import glob
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from raw_data_async import get_dbs
 import scipy.signal as sps
-import multiprocessing as mp
 from numpy.fft import fftshift as fsh
 
 plt.rcParams.update({'axes.formatter.use_mathtext': True,
@@ -50,7 +48,7 @@ def plot_quad_1d(Sx, freq, time, shot) -> None:
     for i, ax in enumerate(axs.flatten(order='F')):
         Sm = np.mean(Sx[i, :, :], axis=-1)
         fav = np.sum(Sm * freq) / np.sum(Sm)
-        ax.semilogy(fsh(freq), fsh(Sm))
+        ax.semilogy(fsh(freq), fsh(Sm), lw=1)
         ax.axvline(0, ls='--', c='gray')
         ax.axvline(fav, ls='--', c='C3')
         ax.set(title=f'Spec {shot} ch{i + 1} f={fav:.0f}kHz')
@@ -74,7 +72,7 @@ def plots(shot):
     data, t = load_data(shot)
     Sx, freq, time = calc_quad(data, t, nperseg=nperseg, nfft=nfft,
                                overlap=overlap)
-    plot_quad_2d(Sx, freq, time, shot)
+    # plot_quad_2d(Sx, freq, time, shot)
     plot_quad_1d(Sx, freq, time, shot)
 
 
