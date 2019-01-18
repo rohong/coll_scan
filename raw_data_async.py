@@ -90,7 +90,10 @@ def dl_dbs_all(shot: int) -> None:
 
 # %%
 if __name__ == '__main__':
-    shots = range(171967, 171970)
+    # shots = range(171967, 171970)
+    shots = [171956, 171957, 171958, 171959,
+             171963, 171964, 171965,
+             171967, 171968, 171969]
     for shot in shots:
         t0 = time.time()
         dl_dbs_all(shot)
