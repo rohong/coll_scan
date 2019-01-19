@@ -112,7 +112,7 @@ def plot_quad_ch_1d(i) -> None:
 # %%
 def main():
     shot = 171956
-    t1, t2 = 3000, 3500
+    t1, t2 = 2500, 3400
     nperseg = 1024 * 4
     nfft = nperseg * 2
     overlap = 0.5

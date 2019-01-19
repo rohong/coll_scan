@@ -53,8 +53,18 @@ def calc_quad(dbs, t, nperseg=1024 * 8, nfft=1024 * 8, overlap=0.5) -> tuple:
     return spec, freq, time + t[0]
 
 
+def save_quad(Sx, freq, time, t1, t2) -> None:
+    from os.path import isfile
+    fname = f'../proc_data/quad_spec_{shot}_{t1:.0f}_{t2:.0f}.npz'
+    if isfile(fname):
+        print(f'{fname} exists! Pass!')
+        return None
+    else:
+        np.savez(fname, Sx=Sx, freq=freq, time=time)
+
+
 def plots(shot):
-    t1, t2 = 2500, 3500
+    t1, t2 = 2500, 3400
 
     idl_dat: dict = read_idl(shot)
     t_sc = idl_dat['time']
@@ -63,6 +73,7 @@ def plots(shot):
 
     data, t = load_data(shot, (t1, t2))
     Sx, freq, time = calc_quad(data, t)
+    save_quad(Sx, freq, time, t1, t2)
 
     # %%
     k_time = np.empty((8, len(time)))
